@@ -1,21 +1,46 @@
+import asyncio
+import multiprocessing as mp
+
 from asyncio.streams import StreamReader, StreamWriter
+from worker.worker import Worker
+import socket
 
 
-async def master_job(reader: StreamReader, writer: StreamWriter):
-    request_line_encoded = await reader.readline()
-    request_line = request_line_encoded.decode()
-    request_line_words = request_line.split(' ')
-    if len(request_line_words) < 2:
-        # FIXME(Alex): Error handling
-        pass
+class Master:
+    def __init__(self, address, port):
+        self._address = address
+        self._port = port
+        self._request_queue = mp.Queue()
 
-    method, path = request_line_words[:2]
+    def start_server(self):
+        loop = asyncio.get_event_loop()
+        server_coroutine = asyncio.start_server(self._master_job, self._address, self._port)
+        server = loop.run_until_complete(server_coroutine)
 
-    addr = writer.get_extra_info('peername')
-    print("{addr}:\t{method} {path}".format(addr=addr, method=method, path=path))
+        for i in range(1):
+            p = mp.Process(target=Worker(self._request_queue).start)
+            p.start()
 
-    writer.write(request_line_encoded)
-    await writer.drain()
-    writer.close()
+        # Serve requests until Ctrl+C is pressed
+        print('Serving on {}'.format(server.sockets[0].getsockname()))
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            pass
 
-    print("=========================================")
+        # Close the server
+        server.close()
+        loop.run_until_complete(server.wait_closed())
+        loop.close()
+
+    async def _master_job(self, reader: StreamReader, writer: StreamWriter):
+        request_line_encoded = await reader.readline()
+        request_line = request_line_encoded.decode()
+
+        socket_obj = writer.get_extra_info('socket')
+
+        self._request_queue.put((request_line, socket_obj))
+
+        await asyncio.sleep(1)
+        writer.close()
+        print('Closed master writer')
