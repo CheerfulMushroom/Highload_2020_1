@@ -1,48 +1,33 @@
 import asyncio
-import socket
-
-from asyncio.streams import StreamWriter
-from multiprocessing import Queue
+import logging
+from socket import socket
 
 
-class Worker:
-    def __init__(self, request_queue: Queue):
-        self._request_queue = request_queue
+async def worker_job(request_line: str,
+                     socket_obj: socket,
+                     worker_name: str):
+    logging.debug('WORKER_{worker_name}: spawned'.format(worker_name=worker_name))
 
-    def start(self):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self._worker_job())
-        loop.run_forever()
+    _, writer = await asyncio.open_connection(sock=socket_obj)
 
-    async def _worker_job(self):
-        while True:
-            request_line: str
-            writer: StreamWriter
+    request_line_words = request_line.split(' ')
+    if len(request_line_words) < 2:
+        # FIXME(Alex): Error handling
+        pass
 
-            request_line: str
-            socket_obj: socket.socket
-            request_line, socket_obj = self._request_queue.get()
+    method, path = request_line_words[:2]
 
-            _, writer = await asyncio.open_connection(sock=socket_obj)
+    # TODO(Alex): check method, check path
+    logging.info('WORKER_{worker_name}: {method} {path}'.format(worker_name=worker_name, method=method, path=path))
 
-            request_line_words = request_line.split(' ')
-            if len(request_line_words) < 2:
-                # FIXME(Alex): Error handling
-                pass
+    writer.write(request_line.encode())
+    await writer.drain()
+    logging.debug('WORKER_{worker_name}: drained data'.format(worker_name=worker_name))
 
-            method, path = request_line_words[:2]
+    await asyncio.sleep(1)
+    writer.close()
+    logging.debug('WORKER_{worker_name}: closed slave writer'.format(worker_name=worker_name))
 
-            # TODO(Alex): check method, check path
-            addr = writer.get_extra_info('peername')
-            print("{addr}:\t{method} {path}".format(addr=addr, method=method, path=path))
+    # socket_obj.close()
 
-            writer.write(request_line.encode())
-            await writer.drain()
-
-            await asyncio.sleep(3)
-            writer.close()
-            print('Closed slave writer')
-
-            # socket_obj.close()
-
-            print("=========================================")
+    logging.debug('WORKER_{worker_name}: done'.format(worker_name=worker_name))
