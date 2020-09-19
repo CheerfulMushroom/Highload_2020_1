@@ -5,14 +5,23 @@ from config import Config
 
 
 async def worker_job(request_line: str,
-                     socket_obj: socket,
+                     socket_fd: int,
                      worker_name: str):
     if Config.log_worker_verbose:
         logging.debug('WORKER_{worker_name}: spawned'.format(worker_name=worker_name))
+    socket_obj = socket(fileno=socket_fd)
+    # socket_obj.send(b'worker ')
 
-    _, writer = await asyncio.open_connection(sock=socket_obj)
+    try:
+        socket_obj.send(b'worker ')
+        _, writer = await asyncio.open_connection(sock=socket_obj)
+    except Exception as e:
+        logging.error('WORKER_{}: bad socket_fd {}'.format(worker_name, socket_fd))
+        logging.error('WORKER_{}: {}'.format(worker_name, e))
+        return
+
     # TODO: debug
-    logging.warning(socket_obj.fileno())
+    logging.warning('WORKER_{}: socket_fd {}'.format(worker_name, socket_obj.fileno()))
 
     request_line_words = request_line.split(' ')
     if len(request_line_words) < 2:

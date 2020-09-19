@@ -19,8 +19,7 @@ class Master:
         server_coroutine = asyncio.start_server(self._master_job,
                                                 host=self._address,
                                                 port=self._port,
-                                                backlog=Config.max_connections,
-                                                reuse_port=True)
+                                                backlog=Config.max_connections)
         server = loop.run_until_complete(server_coroutine)
         logging.info('MASTER: serving on {}'.format(server.sockets[0].getsockname()))
 
@@ -47,10 +46,20 @@ class Master:
         # TODO: debug
         socket_obj: socket.socket
         socket_obj = writer.get_extra_info('socket')
-        logging.warning(socket_obj.fileno())
 
-        self._request_queue.put((request_line, socket_obj))
+        # TODO: debug
+        print('send masterW message')
+        writer.write(b'masterW ')
+        await writer.drain()
+        print('send masterS message')
+        socket_obj.send(b'masterS ')
 
-        await asyncio.sleep(.1)
-        writer.close()
-        logging.debug('MASTER: Closed master writer')
+        socket_fd = socket_obj.fileno()
+
+        socket_obj_new = socket.socket(fileno=socket_fd)
+        print('send masterSNew message')
+        socket_obj_new.send(b'masterSNew ')
+
+        logging.warning('MASTER: socket_fd {}'.format(socket_fd))
+
+        self._request_queue.put((request_line, socket_fd))
