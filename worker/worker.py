@@ -13,7 +13,7 @@ async def worker_job(request_line: str,
     request_line_words = request_line.split(' ')
     if len(request_line_words) < 2:
         # FIXME(Alex): Error handling
-        pass
+        logging.error('WORKER_{worker_name}: NO ERROR HANDLING'.format(worker_name=worker_name))
 
     method, path = request_line_words[:2]
 

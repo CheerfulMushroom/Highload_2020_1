@@ -1,7 +1,9 @@
 import logging
+
 import coloredlogs
-from master.master import Master
+
 from config import Config
+from master.master import Master
 
 if __name__ == "__main__":
     coloredlogs.install(

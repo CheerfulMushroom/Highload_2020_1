@@ -1,11 +1,10 @@
 import asyncio
 import logging
 import multiprocessing as mp
-
 from asyncio.streams import StreamReader, StreamWriter
-from worker.worker_spawner import WorkerSpawner
 
 from config import Config
+from worker.worker_spawner import WorkerSpawner
 
 
 class Master:
