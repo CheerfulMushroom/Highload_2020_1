@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import socket
 import multiprocessing as mp
 from asyncio.streams import StreamReader, StreamWriter
 
@@ -15,7 +16,11 @@ class Master:
 
     def start_server(self):
         loop = asyncio.get_event_loop()
-        server_coroutine = asyncio.start_server(self._master_job, self._address, self._port)
+        server_coroutine = asyncio.start_server(self._master_job,
+                                                host=self._address,
+                                                port=self._port,
+                                                backlog=Config.max_connections,
+                                                reuse_port=True)
         server = loop.run_until_complete(server_coroutine)
         logging.info('MASTER: serving on {}'.format(server.sockets[0].getsockname()))
 
@@ -39,10 +44,13 @@ class Master:
         request_line_encoded = await reader.readline()
         request_line = request_line_encoded.decode()
 
+        # TODO: debug
+        socket_obj: socket.socket
         socket_obj = writer.get_extra_info('socket')
+        logging.warning(socket_obj.fileno())
 
         self._request_queue.put((request_line, socket_obj))
 
-        await asyncio.sleep(3)
+        await asyncio.sleep(.1)
         writer.close()
         logging.debug('MASTER: Closed master writer')
