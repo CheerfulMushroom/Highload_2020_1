@@ -1,5 +1,7 @@
 import logging
 import socket
+import uvloop
+import asyncio
 from multiprocessing import Process
 
 import coloredlogs
@@ -7,18 +9,18 @@ import coloredlogs
 from config import Config
 from worker.worker_spawner import WorkerSpawner
 
-
 if __name__ == "__main__":
     coloredlogs.install(
         level=Config.log_level,
         fmt=Config.log_format,
         datefmt=Config.log_date_format,
     )
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
     logging.info('Starting webserver')
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((Config.addr, Config.port))
     server_socket.listen(Config.max_connections)
     server_socket.setblocking(False)
