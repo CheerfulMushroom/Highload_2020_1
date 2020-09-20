@@ -1,7 +1,7 @@
 import re
 
 if __name__ == "__main__":
-    file = open('results.txt')
+    file = open('helpers/results.txt')
     lines = file.readlines()
 
     req_line_pattern = r"GET /lol_(\d+)\.txt HTTP/1\.1"

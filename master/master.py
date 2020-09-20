@@ -1,6 +1,6 @@
 import asyncio
 import logging
-import socket
+from socket import socket
 import multiprocessing as mp
 from asyncio.streams import StreamReader, StreamWriter
 
@@ -43,23 +43,13 @@ class Master:
         request_line_encoded = await reader.readline()
         request_line = request_line_encoded.decode()
 
-        # TODO: debug
-        socket_obj: socket.socket
+        socket_obj: socket
         socket_obj = writer.get_extra_info('socket')
 
-        # TODO: debug
-        print('send masterW message')
-        writer.write(b'masterW ')
-        await writer.drain()
-        print('send masterS message')
-        socket_obj.send(b'masterS ')
+        logging.debug('MASTER: socket_fd {}'.format(socket_obj.fileno()))
 
-        socket_fd = socket_obj.fileno()
+        self._request_queue.put((request_line, socket_obj))
 
-        socket_obj_new = socket.socket(fileno=socket_fd)
-        print('send masterSNew message')
-        socket_obj_new.send(b'masterSNew ')
-
-        logging.warning('MASTER: socket_fd {}'.format(socket_fd))
-
-        self._request_queue.put((request_line, socket_fd))
+        await asyncio.sleep(0.1)
+        writer.close()
+        logging.debug('MASTER: closed socket_fd {}'.format(socket_obj.fileno()))

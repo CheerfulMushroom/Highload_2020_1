@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from socket import socket
 from multiprocessing import Queue
 
 from config import Config
@@ -26,14 +27,15 @@ class WorkerSpawner:
             if Config.log_worker_spawner_verbose:
                 logging.debug('SPAWNER_{spawner_id}: awaiting data'.format(spawner_id=self._spawner_id))
 
-            request_line, socket_fd = await self._loop.run_in_executor(None, self._request_queue.get)
+            socket_obj: socket
+            request_line, socket_obj = await self._loop.run_in_executor(None, self._request_queue.get)
             # TODO: debug
-            logging.warning('SPAWNER_{}: socket_fd {}'.format(self._spawner_id, socket_fd))
+            logging.debug('SPAWNER_{}: socket_fd {}'.format(self._spawner_id, socket_obj.fileno()))
             worker_name = '{spawner_id}_{worker_id}'.format(spawner_id=self._spawner_id, worker_id=worker_num)
 
             if Config.log_worker_spawner_verbose:
                 logging.debug('SPAWNER_{spawner_id}: spawning worker {worker_name}'.format(spawner_id=self._spawner_id,
                                                                                            worker_name=worker_name))
 
-            self._loop.create_task(worker_job(request_line, socket_fd, worker_name))
+            self._loop.create_task(worker_job(request_line, socket_obj, worker_name))
             worker_num += 1
