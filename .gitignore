@@ -245,3 +245,6 @@ dmypy.json
 
 # idea
 .idea/
+
+env3.8/
+helpers/results.txt
