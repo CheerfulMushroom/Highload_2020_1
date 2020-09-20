@@ -1,9 +1,12 @@
 import logging
+import socket
+from multiprocessing import Process
 
 import coloredlogs
 
 from config import Config
-from master.master import Master
+from worker.worker_spawner import WorkerSpawner
+
 
 if __name__ == "__main__":
     coloredlogs.install(
@@ -13,5 +16,27 @@ if __name__ == "__main__":
     )
 
     logging.info('Starting webserver')
-    master = Master('127.0.0.1', 8888)
-    master.start_server()
+
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((Config.addr, Config.port))
+    server_socket.listen(Config.max_connections)
+    server_socket.setblocking(False)
+
+    logging.info('Webserver started on {}:{}'.format(Config.addr, Config.port))
+
+    spawner_processes = []
+    for i in range(Config.workers_process_amount):
+        spawner = WorkerSpawner(server_socket, i)
+        spawner_process = Process(target=spawner.start)
+        spawner_processes.append(spawner_process)
+        spawner_process.start()
+
+    try:
+        for spawner_process in spawner_processes:
+            spawner_process.join()
+    except KeyboardInterrupt:
+        for spawner_process in spawner_processes:
+            spawner_process.terminate()
+        server_socket.close()
+        logging.info('Webserver stopped by user')
