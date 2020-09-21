@@ -38,6 +38,10 @@ class Response:
         except OSError:
             pass
 
+    @property
+    def status(self):
+        return self._status
+
     async def send(self, client_socket: socket):
         loop = asyncio.get_event_loop()
 

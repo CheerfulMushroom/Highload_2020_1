@@ -43,7 +43,7 @@ async def worker_job(client_socket: socket, worker_name: str):
     else:
         response = Response(method=request.method, protocol=request.protocol, status=200, filepath=filepath)
 
-    logging.info(f'WORKER_{worker_name}: {response._status} {request.method} {request.url}')
+    logging.info(f'WORKER_{worker_name}: {response.status} {request.method} {request.url}')
 
     # SEND RESPONSE
 
