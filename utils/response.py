@@ -21,7 +21,7 @@ class Response:
         self._status = status
 
         self._headers = {
-            'Server': 'MyCoolServerV1.0',
+            'Server': 'lebedevaa',
             'Date': datetime.now().strftime('%a, %d %b %Y %H:%M:%S GMT'),
             'Connection': 'close'
         }

@@ -248,3 +248,4 @@ dmypy.json
 
 env3.8/
 helpers/results.txt
+nginx/httptest/

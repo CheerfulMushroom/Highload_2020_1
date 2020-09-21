@@ -1,13 +1,13 @@
 import logging
-import socket
+import pathlib
 
 
 class Config:
-    base_dir = '/home/shroomoffun/Programs/main_program/semestr_3/highload/Highload_2020_1/http-test-suite'
+    base_dir = str(pathlib.Path().absolute()) + '/http-test-suite'
     index_filename = 'index.html'
 
     # CONNECTION
-    addr = socket.gethostbyname(socket.gethostname() + '.local')
+    addr = 'localhost'
     port = 8888
     max_connections = 100
     bytes_per_recv = 1024
