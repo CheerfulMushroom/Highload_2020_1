@@ -36,7 +36,7 @@ async def worker_job(client_socket: socket, worker_name: str):
     response: Response
     if request.method not in ['GET', 'HEAD']:
         response = Response(method=request.method, protocol=request.protocol, status=405)
-    elif '..' in request.url:
+    elif '/..' in request.url:
         response = Response(method=request.method, protocol=request.protocol, status=403)
     elif (not os.path.exists(filepath)) or (not request.is_valid):
         response = Response(method=request.method, protocol=request.protocol, status=404)

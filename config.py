@@ -3,14 +3,14 @@ import socket
 
 
 class Config:
-    base_dir = '/home/shroomoffun/Programs/main_program/semestr_3/highload/Highload_2020_1'
+    base_dir = '/home/shroomoffun/Programs/main_program/semestr_3/highload/Highload_2020_1/http-test-suite/httptest'
     index_filename = '/index.html'
 
     # CONNECTION
     addr = socket.gethostbyname(socket.gethostname() + '.local')
     port = 8888
     max_connections = 100
-    bytes_per_recv = 128
+    bytes_per_recv = 1024
     bytes_per_send = 1024
 
     # WORKERS
@@ -21,5 +21,5 @@ class Config:
     log_format = '%(asctime)s\t%(levelname)s\t%(name)s[%(process)d]\t%(message)s'
     log_date_format = '%H:%M:%S'
 
-    log_worker_spawner_verbose = True
-    log_worker_verbose = True
+    log_worker_spawner_verbose = False
+    log_worker_verbose = False
