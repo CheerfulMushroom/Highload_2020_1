@@ -26,7 +26,7 @@ if __name__ == "__main__":
     server_socket.setblocking(False)
 
     logging.info('Webserver started on {}:{}'.format(Config.addr, Config.port))
-
+    logging.info(f'Serving from {Config.base_dir}/')
     spawner_processes = []
     for i in range(Config.workers_process_amount):
         spawner = WorkerSpawner(server_socket, i)
