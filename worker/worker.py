@@ -26,19 +26,21 @@ async def worker_job(client_socket: socket, worker_name: str):
     # GET FILENAME
 
     filepath: str
-    if request.url.endswith('/'):
-        filepath = Config.base_dir + Config.index_filename
+    search_folder = request.url.endswith('/')
+    if search_folder:
+        filepath = Config.base_dir + request.url + Config.index_filename
     else:
         filepath = Config.base_dir + request.url
+    file_exists = os.path.exists(filepath)
 
     # CREATE RESPONSE
 
     response: Response
     if request.method not in ['GET', 'HEAD']:
         response = Response(method=request.method, protocol=request.protocol, status=405)
-    elif '/..' in request.url:
+    elif '/..' in request.url or (search_folder and not file_exists):
         response = Response(method=request.method, protocol=request.protocol, status=403)
-    elif (not os.path.exists(filepath)) or (not request.is_valid):
+    elif (not file_exists) or (not request.is_valid):
         response = Response(method=request.method, protocol=request.protocol, status=404)
     else:
         response = Response(method=request.method, protocol=request.protocol, status=200, filepath=filepath)

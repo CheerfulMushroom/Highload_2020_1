@@ -3,8 +3,8 @@ import socket
 
 
 class Config:
-    base_dir = '/home/shroomoffun/Programs/main_program/semestr_3/highload/Highload_2020_1/http-test-suite/httptest'
-    index_filename = '/index.html'
+    base_dir = '/home/shroomoffun/Programs/main_program/semestr_3/highload/Highload_2020_1/http-test-suite'
+    index_filename = 'index.html'
 
     # CONNECTION
     addr = socket.gethostbyname(socket.gethostname() + '.local')

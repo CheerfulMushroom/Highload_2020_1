@@ -51,7 +51,7 @@ class Response:
 
         await loop.sock_sendall(client_socket, raw_bytes)
 
-        if self._filepath is not None:
+        if self._filepath is not None and self._method == 'GET':
             with open(self._filepath, 'rb') as file:
                 part = file.read(Config.bytes_per_send)
                 while len(part) > 0:
