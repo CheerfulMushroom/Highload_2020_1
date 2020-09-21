@@ -14,7 +14,7 @@ class Config:
     bytes_per_send = 1024
 
     # WORKERS
-    workers_process_amount = 8
+    workers_process_amount = 4
 
     # LOGGING
     log_level = logging.DEBUG
