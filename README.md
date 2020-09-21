@@ -22,7 +22,7 @@
 
 - чтобы запустить сервер
 
-``SERVER COMMAND``
+``sudo docker build -t pythonserver . && sudo docker run -p 80:3000 pythonserver``
 
 - чтобы запустить nginx
 
