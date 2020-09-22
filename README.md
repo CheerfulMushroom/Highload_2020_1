@@ -57,6 +57,13 @@
 
 ## Результаты
 
+Параметры системы:
+
+- OS: Ubuntu 18.04.4 LTS
+- Processor: Intel® Core™ i7-7700 CPU @ 3.60GHz × 8 
+- Hard drive: WDC WD10EZEX-08W
+- Python: 3.6.9
+
 #### Тесты
 
 ![Тесты](/test_results/test_results.png)
