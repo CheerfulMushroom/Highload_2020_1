@@ -57,7 +57,10 @@ class Response:
             with open(self._filepath, 'rb') as file:
                 if Config.sendfile:
                     try:
-                        os.sendfile(client_socket.fileno(), file.fileno(), 0, getsize(self._filepath))
+                        await loop.run_in_executor(None,
+                                                   os.sendfile,
+                                                   client_socket.fileno(), file.fileno(),
+                                                   0, getsize(self._filepath) )
                     except (BrokenPipeError, ConnectionResetError) as e:
                         logging.warning(e)
                         return
