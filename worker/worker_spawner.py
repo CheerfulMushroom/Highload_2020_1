@@ -10,9 +10,11 @@ class WorkerSpawner:
     def __init__(self, server_socket: socket, spawner_id: int):
         self._server_socket = server_socket
         self._spawner_id = spawner_id
-        self._loop = asyncio.get_event_loop()
+        self._loop: asyncio.AbstractEventLoop = None
 
     def start(self):
+        self._loop = asyncio.get_event_loop()
+
         logging.info('SPAWNER_{}: started'.format(self._spawner_id))
 
         try:

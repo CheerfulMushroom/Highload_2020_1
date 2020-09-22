@@ -18,7 +18,7 @@ async def worker_job(client_socket: socket, worker_name: str):
     while True:
         request_part = (await loop.sock_recv(client_socket, Config.bytes_per_recv)).decode()
         request_raw += request_part
-        if '\r\n' in request_raw:
+        if '\r\n' in request_raw or len(request_part) == 0:
             break
 
     request = Request(request_raw)

@@ -4,9 +4,9 @@ from urllib import parse
 
 class Request:
     def __init__(self, unparsed_message: str):
-        self.method = None
-        self.url = None
-        self.protocol = None
+        self.method = ''
+        self.url = ''
+        self.protocol = ''
         self.is_valid = False
 
         lines = unparsed_message.splitlines()
