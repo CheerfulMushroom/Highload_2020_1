@@ -1,3 +1,5 @@
+aiofile==3.1.0
+caio==0.6.1
 coloredlogs==14.0
 humanfriendly==8.2
 uvloop==0.14.0
