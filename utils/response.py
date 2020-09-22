@@ -4,6 +4,7 @@ from datetime import datetime
 from os.path import getsize
 from socket import socket
 from config import Config
+import os
 
 STATUS_MESSAGES = {
     200: 'OK',
@@ -53,7 +54,5 @@ class Response:
 
         if self._filepath is not None and self._method == 'GET':
             with open(self._filepath, 'rb') as file:
-                part = file.read(Config.bytes_per_send)
-                while len(part) > 0:
-                    await loop.sock_sendall(client_socket, part)
-                    part = file.read(Config.bytes_per_send)
+                os.sendfile(client_socket.fileno(), file.fileno(), 0, getsize(self._filepath))
+
