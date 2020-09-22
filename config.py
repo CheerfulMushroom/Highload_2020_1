@@ -11,7 +11,7 @@ class Config:
     port = 3000
     max_connections = 100
     bytes_per_recv = 1024
-    sendfile = True
+    sendfile = False
     bytes_per_send = 1024  # ignored if sendfile = True
 
     # WORKERS
