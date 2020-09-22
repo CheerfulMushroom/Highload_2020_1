@@ -60,4 +60,5 @@ class Response:
                         await loop.sock_sendall(client_socket, part)
                     except (BrokenPipeError, ConnectionResetError) as e:
                         logging.warning(e)
+                        return
                     part = file.read(Config.bytes_per_send)
