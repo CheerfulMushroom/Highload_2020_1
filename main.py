@@ -15,7 +15,7 @@ if __name__ == "__main__":
         fmt=Config.log_format,
         datefmt=Config.log_date_format,
     )
-    # asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
     logging.info('Starting webserver')
 
